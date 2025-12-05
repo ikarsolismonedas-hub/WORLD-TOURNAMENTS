@@ -500,23 +500,47 @@
     `;
   }
 
-  async function cargarRanking() {
-    try {
-      const res = await fetch(SHEET_CSV_URL);
-      const text = await res.text();
+async function cargarRanking() {
+  try {
+    const res = await fetch(SHEET_CSV_URL);
+    const text = await res.text();
 
-      const rows = text.trim().split("\n").slice(1); // Quita encabezados
+    // Cada fila del CSV (quitamos encabezado)
+    const rows = text.trim().split("\n").slice(1);
 
-      const jugadores = rows.map(row => {
+    const jugadores = rows
+      .map(row => {
         const cols = row.split(",");
+
         return {
-          jugador: cols[0]?.trim(),
-          pais: cols[1]?.trim(),
-          copas: Number(cols[2]?.trim()),
-          ultimaCopa: cols[3]?.trim(),
-          notas: cols[4]?.trim(),
+          jugador: (cols[0] || "").trim(),
+          pais: (cols[1] || "").trim(),
+          copas: Number((cols[2] || "0").trim()),
+          ultimaCopa: (cols[3] || "").trim(),
+          notas: (cols[4] || "").trim(),
         };
-      }).sort((a, b) => b.copas - a.copas);
+      })
+      // Quitamos filas donde no hay nombre
+      .filter(j => j.jugador)
+      // Ordenar por copas (mayor a menor)
+      .sort((a, b) => b.copas - a.copas);
+
+    // Pintar TODAS las filas (sin slice, sin límite)
+    document.getElementById("ranking-body").innerHTML = jugadores
+      .map((j, i) =>
+        crearFilaJugador(i, j.jugador, j.pais, j.copas, j.ultimaCopa, j.notas)
+      )
+      .join("");
+
+    // Actualizar fecha/hora
+    document.getElementById("last-updated").textContent =
+      new Date().toLocaleString("es-ES");
+
+  } catch (error) {
+    console.error("Error cargando datos:", error);
+  }
+}
+
 
       document.getElementById("ranking-body").innerHTML = jugadores
         .map((j, i) =>
@@ -537,6 +561,7 @@
 
 </body>
 </html>
+
 
 
 
