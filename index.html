@@ -196,11 +196,11 @@
 
     .table-wrapper {
       border-radius: 14px;
-      overflow-y: auto; /* 👈 scroll vertical */
+      overflow-y: auto;
       overflow-x: hidden;
       border: 1px solid var(--border-soft);
       background: radial-gradient(circle at top left, rgba(0, 255, 198, 0.12), transparent 55%), #050712;
-      max-height: 520px; /* altura máxima visible antes de scroll */
+      max-height: 520px;
     }
 
     table {
@@ -438,7 +438,8 @@
         <div class="filters-right">
           <div class="pill pill-input">
             🔍
-            <input type="text" placeholder="Buscar jugador..." />
+            <!-- 👇 le damos un id -->
+            <input id="search-jugador" type="text" placeholder="Buscar jugador..." />
           </div>
         </div>
       </section>
@@ -469,6 +470,9 @@
   <script>
     const SHEET_CSV_URL =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_0o0lo_oqp60rh4u_bOvadsM0MqWJxzQgcz37DDA9CpP0zujrJ2pkKEBhCGhV8G3bMGOxJGDFdI0O/pub?output=csv";
+
+    // aquí guardamos todos los jugadores
+    let jugadoresGlobal = [];
 
     function crearFilaJugador(index, jugador, pais, copas, ultimaCopa, notas) {
       const pos = index + 1;
@@ -503,15 +507,24 @@
       `;
     }
 
+    // pinta la tabla a partir de un array de jugadores
+    function renderTabla(lista) {
+      const tbody = document.getElementById("ranking-body");
+      tbody.innerHTML = lista
+        .map((j, i) =>
+          crearFilaJugador(i, j.jugador, j.pais, j.copas, j.ultimaCopa, j.notas)
+        )
+        .join("");
+    }
+
     async function cargarRanking() {
       try {
         const res = await fetch(SHEET_CSV_URL);
         const text = await res.text();
 
-        // Cada fila del CSV (quitamos encabezado)
         const rows = text.trim().split("\n").slice(1);
 
-        const jugadores = rows
+        jugadoresGlobal = rows
           .map((row) => {
             const cols = row.split(",");
 
@@ -523,21 +536,32 @@
               notas: (cols[4] || "").trim(),
             };
           })
-          // Quitamos filas donde no hay nombre
           .filter((j) => j.jugador)
-          // Ordenar por copas (mayor a menor)
           .sort((a, b) => b.copas - a.copas);
 
-        // Pintar TODAS las filas
-        document.getElementById("ranking-body").innerHTML = jugadores
-          .map((j, i) =>
-            crearFilaJugador(i, j.jugador, j.pais, j.copas, j.ultimaCopa, j.notas)
-          )
-          .join("");
+        // pintamos todos al inicio
+        renderTabla(jugadoresGlobal);
 
-        // Actualizar fecha/hora
+        // actualizamos fecha/hora
         document.getElementById("last-updated").textContent =
           new Date().toLocaleString("es-ES");
+
+        // configurar buscador
+        const input = document.getElementById("search-jugador");
+        input.addEventListener("input", (e) => {
+          const term = e.target.value.toLowerCase().trim();
+
+          if (!term) {
+            renderTabla(jugadoresGlobal);
+            return;
+          }
+
+          const filtrados = jugadoresGlobal.filter((j) =>
+            j.jugador.toLowerCase().includes(term)
+          );
+
+          renderTabla(filtrados);
+        });
       } catch (error) {
         console.error("Error cargando datos:", error);
       }
