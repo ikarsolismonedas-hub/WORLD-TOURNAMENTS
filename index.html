@@ -436,8 +436,8 @@
 
     let jugadoresGlobal = [];
 
-    function crearFilaJugador(index, jugador, pais, copas, ultimaCopa, notas) {
-      const pos = index + 1;
+    // AHORA recive la posición ya calculada (rank)
+    function crearFilaJugador(posicion, jugador, pais, copas, ultimaCopa, notas) {
       const iniciales = jugador
         .split(" ")
         .filter(Boolean)
@@ -448,7 +448,7 @@
 
       return `
         <tr>
-          <td class="position"><span>${pos}</span></td>
+          <td class="position"><span>${posicion}</span></td>
           <td>
             <div class="player-cell">
               <div class="avatar">${iniciales}</div>
@@ -472,8 +472,8 @@
     function renderTabla(lista) {
       const tbody = document.getElementById("ranking-body");
       tbody.innerHTML = lista
-        .map((j, i) =>
-          crearFilaJugador(i, j.jugador, j.pais, j.copas, j.ultimaCopa, j.notas)
+        .map((j) =>
+          crearFilaJugador(j.rank, j.jugador, j.pais, j.copas, j.ultimaCopa, j.notas)
         )
         .join("");
     }
@@ -497,7 +497,12 @@
             };
           })
           .filter((j) => j.jugador)
-          .sort((a, b) => b.copas - a.copas);
+          .sort((a, b) => b.copas - a.copas)
+          // aquí asignamos el puesto original (rank)
+          .map((j, index) => ({
+            ...j,
+            rank: index + 1,
+          }));
 
         renderTabla(jugadoresGlobal);
 
