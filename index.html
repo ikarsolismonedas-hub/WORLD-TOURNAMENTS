@@ -590,11 +590,10 @@
           </div>
         </div>
         <div class="live-controls">
-          <button class="btn-live btn-live-start" id="btn-start-share">
+          <!-- este botón SOLO abre broadcaster.html -->
+          <button class="btn-live btn-live-start"
+                  onclick="window.open('broadcaster.html','_blank')">
             🚀 Soy el streamer (compartir pantalla)
-          </button>
-          <button class="btn-live btn-live-stop" id="btn-stop-share">
-            ⏹ Detener
           </button>
         </div>
       </div>
@@ -821,6 +820,117 @@
             foto: (cols[5] || "").trim(),
             tiktok: (cols[6] || "").trim()
           }))
+          .filter((j) => j.jugador)
+          .sort((a, b) => b.copas - a.copas)
+          .map((j, index) => ({ ...j, rank: index + 1 }));
 
+        renderTabla(jugadoresGlobal);
 
-::contentReference[oaicite:0]{index=0}
+        document.getElementById("last-updated").textContent =
+          new Date().toLocaleString("es-ES");
+      } catch (error) {
+        console.error("Error cargando datos:", error);
+      }
+    }
+
+    function setupBuscador() {
+      const input = document.getElementById("search-jugador");
+      if (!input) return;
+
+      input.addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase().trim();
+
+        if (!term) return renderTabla(jugadoresGlobal);
+
+        const filtrados = jugadoresGlobal.filter((j) =>
+          j.jugador.toLowerCase().includes(term)
+        );
+
+        renderTabla(filtrados);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      cargarRanking();
+      setupBuscador();
+
+      const modal = document.getElementById("player-modal");
+      const closeBtn = document.getElementById("modal-close");
+
+      closeBtn.addEventListener("click", cerrarModalJugador);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) cerrarModalJugador();
+      });
+    });
+  </script>
+
+  <!-- 👀 VIEWER WEBRTC: SOLO RECIBE LA TRANSMISIÓN -->
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <script>
+    const liveVideo = document.getElementById("live-video");
+    const liveStatus = document.getElementById("live-status");
+    const liveDot = document.getElementById("live-dot");
+
+    const socket = io("https://streaming-torneos-server-1.onrender.com");
+
+    let pcViewer = null;
+    const rtcConfig = {
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+    };
+
+    function resetViewer() {
+      if (pcViewer) {
+        pcViewer.close();
+        pcViewer = null;
+      }
+      liveVideo.srcObject = null;
+      liveStatus.textContent = "Nadie está compartiendo pantalla todavía.";
+      liveDot.style.background = "#22c55e";
+      liveDot.style.boxShadow = "0 0 12px rgba(34,197,94,0.9)";
+    }
+
+    socket.on("broadcaster", (broadcasterId) => {
+      // el servidor avisa que hay streamer, nos ofrecemos como watcher
+      socket.emit("watcher", broadcasterId);
+      liveStatus.textContent = "Conectando con transmisión en vivo...";
+      liveDot.style.background = "#ef4444";
+      liveDot.style.boxShadow = "0 0 12px rgba(239,68,68,0.9)";
+    });
+
+    socket.on("offer", async (id, description) => {
+      pcViewer = new RTCPeerConnection(rtcConfig);
+
+      pcViewer.ontrack = (event) => {
+        liveVideo.srcObject = event.streams[0];
+        liveStatus.textContent = "Viendo transmisión en vivo.";
+      };
+
+      pcViewer.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit("candidate", id, event.candidate);
+        }
+      };
+
+      await pcViewer.setRemoteDescription(description);
+      const answer = await pcViewer.createAnswer();
+      await pcViewer.setLocalDescription(answer);
+      socket.emit("answer", id, pcViewer.localDescription);
+    });
+
+    socket.on("candidate", (id, candidate) => {
+      if (pcViewer) {
+        pcViewer.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    });
+
+    socket.on("broadcast-ended", () => {
+      resetViewer();
+    });
+
+    socket.on("disconnectPeer", () => {
+      resetViewer();
+    });
+  </script>
+
+</body>
+</html>
