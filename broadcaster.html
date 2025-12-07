@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Compartir pantalla 8BP</title>
+</head>
+<body style="background:#000; color:white; text-align:center;">
+
+  <h2>🟢 Compartir pantalla - 8 Ball Pool</h2>
+  <button id="startBtn">Comenzar transmisión</button>
+  <button id="stopBtn" disabled>Detener transmisión</button>
+
+  <p id="status" style="margin-top:10px;">Estado: esperando…</p>
+  <video id="preview" autoplay playsinline muted
+         style="width:60%; max-width:500px; margin-top:15px; border:2px solid #00ffc6; background:black;"></video>
+
+  <!-- Socket.io desde CDN -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <script>
+    const socket = io("https://streaming-torneos-server-1.onrender.com");
+
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn  = document.getElementById("stopBtn");
+    const statusEl = document.getElementById("status");
+    const preview  = document.getElementById("preview");
+
+    const config = {
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" }
+      ]
+    };
+
+    // Para varios watchers
+    let peerConnections = {};
+    let localStream = null;
+    let isBroadcasting = false;
+
+    startBtn.onclick = async () => {
+      try {
+        // Pide la pantalla (puede ser una ventana, pestaña, pantalla completa)
+        localStream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: false
+        });
+
+        preview.srcObject = localStream;
+        isBroadcasting = true;
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        statusEl.textContent = "Estado: transmitiendo en vivo 🔴";
+
+        // Avisamos al servidor que somos el broadcaster
+        socket.emit("start-broadcast");
+      } catch (e) {
+        console.error("No se pudo compartir pantalla:", e);
+        statusEl.textContent = "Error al compartir pantalla";
+      }
+    };
+
+    stopBtn.onclick = () => {
+      if (!isBroadcasting) return;
+
+      // Parar tracks
+      localStream.getTracks().forEach(t => t.stop());
+      preview.srcObject = null;
+      isBroadcasting = false;
+
+      // Cerrar todas las conexiones
+      Object.values(peerConnections).forEach(pc => pc.close());
+      peerConnections = {};
+
+      socket.emit("stop-broadcast");
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      statusEl.textContent = "Estado: transmisión detenida";
+    };
+
+    // Cuando un watcher quiere vernos
+    socket.on("watcher", (watcherId) => {
+      if (!localStream) return;
+
+      const peer = new RTCPeerConnection(config);
+      peerConnections[watcherId] = peer;
+
+      // Enviamos nuestro stream al watcher
+      localStream.getTracks().forEach(track => peer.addTrack(track, localStream));
+
+      peer.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit("candidate", watcherId, event.candidate);
+        }
+      };
+
+      peer
+        .createOffer()
+        .then(offer => peer.setLocalDescription(offer))
+        .then(() => {
+          socket.emit("offer", watcherId, peer.localDescription);
+        });
+    });
+
+    // Cuando el watcher nos responde
+    socket.on("answer", (watcherId, description) => {
+      const peer = peerConnections[watcherId];
+      if (!peer) return;
+      peer.setRemoteDescription(description);
+    });
+
+    // ICE del watcher hacia nosotros
+    socket.on("candidate", (watcherId, candidate) => {
+      const peer = peerConnections[watcherId];
+      if (!peer) return;
+      peer.addIceCandidate(new RTCIceCandidate(candidate));
+    });
+
+    // Cuando el watcher se desconecta
+    socket.on("disconnectPeer", (id) => {
+      const peer = peerConnections[id];
+      if (peer) {
+        peer.close();
+        delete peerConnections[id];
+      }
+    });
+
+    // Si la pestaña se cierra o recarga
+    window.onbeforeunload = () => {
+      if (isBroadcasting) {
+        socket.emit("stop-broadcast");
+      }
+    };
+  </script>
+</body>
+</html>
