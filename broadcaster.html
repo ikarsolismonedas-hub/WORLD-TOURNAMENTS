@@ -1,109 +1,247 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Streamer 8BP - Compartir pantalla</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <meta charset="UTF-8" />
+  <title>Soy el streamer - Compartir pantalla</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
-    body { background:#050712; color:white; text-align:center; padding:20px; }
-    button { padding:12px 18px; border-radius:999px; border:none; cursor:pointer; font-weight:bold; }
-    #startBtn { background:#16a34a; color:white; }
-    #stopBtn  { background:#dc2626; color:white; display:none; }
-    video { width:90%; max-width:800px; margin-top:20px; background:black; border-radius:8px; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #192345 0, #050712 55%);
+      color: #f9fafb;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 600px;
+      background: #050712;
+      border-radius: 18px;
+      padding: 24px 20px;
+      border: 1px solid rgba(0,255,198,0.18);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    h1 {
+      font-size: 22px;
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1 span.emoji {
+      font-size: 26px;
+    }
+
+    p {
+      margin: 0 0 16px;
+      font-size: 14px;
+      color: #9ca3c7;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 10px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #btn-start {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #020617;
+      flex: 1;
+    }
+
+    #btn-stop {
+      background: #1f2937;
+      color: #e5e7eb;
+      min-width: 90px;
+    }
+
+    #status {
+      font-size: 13px;
+      margin-bottom: 10px;
+      color: #9ca3c7;
+    }
+
+    .preview-wrapper {
+      background: radial-gradient(circle at top, #1b2138, #020617);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
+    #preview {
+      width: 100%;
+      max-height: 360px;
+      display: block;
+      background: #000;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #64748b;
+    }
   </style>
 </head>
 <body>
 
-  <h2>🎥 Soy el streamer - Compartir pantalla</h2>
-  <p>Al comenzar, los que estén en el ranking verán tu pantalla en la sección “Transmisión en vivo”.</p>
+  <div class="page">
+    <h1><span class="emoji">🎥</span> Soy el streamer - Compartir pantalla</h1>
+    <p>
+      Al comenzar, quienes estén en el ranking verán tu pantalla en la sección
+      <strong>“Transmisión en vivo”</strong>.
+    </p>
 
-  <button id="startBtn">🚀 Comenzar transmisión</button>
-  <button id="stopBtn">⛔ Detener transmisión</button>
+    <div class="btn-row">
+      <button id="btn-start">🚀 Comenzar transmisión</button>
+      <button id="btn-stop" disabled>⏹ Detener</button>
+    </div>
 
-  <video id="preview" autoplay playsinline muted></video>
+    <div id="status">Listo para transmitir desde tu PC.</div>
 
+    <div class="preview-wrapper">
+      <video id="preview" autoplay playsinline muted></video>
+    </div>
+
+    <div class="hint">
+      👉 La mayoría de navegadores de celular <strong>no permiten compartir pantalla</strong>.
+      Usa este panel desde una PC (Chrome / Edge / Firefox) para transmitir tus jugadas.
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   <script>
-    const socket = io("https://streaming-torneos-server-1.onrender.com");
+    // URL de tu servidor de señalización en Render
+    const SIGNALING_URL = "https://streaming-torneos-server-1.onrender.com";
 
-    const config = {
+    const socket = io(SIGNALING_URL);
+    const startBtn = document.getElementById("btn-start");
+    const stopBtn  = document.getElementById("btn-stop");
+    const preview  = document.getElementById("preview");
+    const statusEl = document.getElementById("status");
+
+    const rtcConfig = {
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
     };
 
-    let localStream = null;
-    let peers = {}; // un peer por watcher
+    let screenStream = null;
+    let peers = {}; // watcherId -> RTCPeerConnection
 
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn  = document.getElementById("stopBtn");
-    const preview  = document.getElementById("preview");
+    function setStatus(text) {
+      statusEl.textContent = text;
+    }
 
-    startBtn.onclick = async () => {
+    async function startBroadcast() {
+      if (screenStream) return;
+
+      // 💡 Comprobamos si el navegador soporta compartir pantalla
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+        alert(
+          "Tu navegador no permite compartir pantalla.\n\n" +
+          "Puedes transmitir desde una PC (Chrome / Edge / Firefox) y los demás " +
+          "lo verán en el ranking."
+        );
+        return;
+      }
+
       try {
-        localStream = await navigator.mediaDevices.getDisplayMedia({
-          video: true,
+        screenStream = await navigator.mediaDevices.getDisplayMedia({
+          video: { frameRate: 30 },
           audio: false
         });
 
-        preview.srcObject = localStream;
+        preview.srcObject = screenStream;
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        setStatus("Transmitiendo tu pantalla. Abre el ranking para ver cómo se ve.");
 
-        socket.emit("start-broadcast");
+        // Avisar al servidor que hay un broadcaster
+        socket.emit("broadcaster");
 
-        startBtn.style.display = "none";
-        stopBtn.style.display = "inline-block";
-
-      } catch (e) {
-        console.error("Error al compartir pantalla:", e);
+        // Si el usuario detiene desde el cuadro del sistema
+        screenStream.getVideoTracks()[0].addEventListener("ended", stopBroadcast);
+      } catch (err) {
+        console.error(err);
         alert("No se pudo iniciar la transmisión.");
+        setStatus("Error al iniciar transmisión.");
       }
-    };
+    }
 
-    stopBtn.onclick = () => {
-      if (localStream) {
-        localStream.getTracks().forEach(t => t.stop());
+    function stopBroadcast() {
+      if (screenStream) {
+        screenStream.getTracks().forEach(t => t.stop());
+        screenStream = null;
       }
+
       Object.values(peers).forEach(pc => pc.close());
       peers = {};
-      socket.emit("stop-broadcast");
-      startBtn.style.display = "inline-block";
-      stopBtn.style.display = "none";
-    };
+      preview.srcObject = null;
 
-    // Cuando un viewer quiere vernos
-    socket.on("watcher", (watcherId) => {
-      if (!localStream) return;
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
 
-      const pc = new RTCPeerConnection(config);
-      peers[watcherId] = pc;
+      setStatus("Transmisión detenida.");
+      socket.emit("broadcast-ended");
+    }
 
-      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+    startBtn.addEventListener("click", startBroadcast);
+    stopBtn.addEventListener("click", stopBroadcast);
+    window.addEventListener("beforeunload", stopBroadcast);
+
+    // 👀 Cuando un espectador se conecta
+    socket.on("watcher", async (id) => {
+      if (!screenStream) return;
+
+      const pc = new RTCPeerConnection(rtcConfig);
+      peers[id] = pc;
+
+      screenStream.getTracks().forEach(track => pc.addTrack(track, screenStream));
 
       pc.onicecandidate = (event) => {
         if (event.candidate) {
-          socket.emit("candidate", watcherId, event.candidate);
+          socket.emit("candidate", id, event.candidate);
         }
       };
 
-      pc.createOffer()
-        .then(offer => pc.setLocalDescription(offer))
-        .then(() => {
-          socket.emit("offer", watcherId, pc.localDescription);
-        });
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      socket.emit("offer", id, pc.localDescription);
     });
 
-    socket.on("answer", (watcherId, description) => {
-      const pc = peers[watcherId];
+    // Recibir answer de un viewer
+    socket.on("answer", (id, description) => {
+      const pc = peers[id];
       if (pc) {
         pc.setRemoteDescription(description);
       }
     });
 
-    socket.on("candidate", (watcherId, candidate) => {
-      const pc = peers[watcherId];
-      if (pc) {
+    // Candidatos ICE desde viewers
+    socket.on("candidate", (id, candidate) => {
+      const pc = peers[id];
+      if (pc && candidate) {
         pc.addIceCandidate(new RTCIceCandidate(candidate));
       }
     });
 
+    // Viewer se desconecta
     socket.on("disconnectPeer", (id) => {
       const pc = peers[id];
       if (pc) {
@@ -111,11 +249,6 @@
         delete peers[id];
       }
     });
-
-    window.onbeforeunload = () => {
-      socket.emit("stop-broadcast");
-    };
   </script>
-
 </body>
 </html>
