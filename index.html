@@ -1,1038 +1,133 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Ranking de Copas - 8 Ball Pool</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<title>Ranking de Copas - 8 Ball Pool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    :root {
-      --bg-main: #050712;
-      --bg-card: #0b0f1f;
-
-      --accent: #00ffc6;
-      --accent-soft: rgba(0, 255, 198, 0.12);
-      --text-main: #f5f7ff;
-      --text-muted: #9ca3c7;
-      --gold: #ffd700;
-      --silver: #c0c0c0;
-      --bronze: #cd7f32;
-      --danger: #ff4b6b;
-      --border-soft: rgba(255, 255, 255, 0.08);
-      --radius-lg: 18px;
-      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.55);
-      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
+<style>
     body {
-      font-family: var(--font-main);
-      background: radial-gradient(circle at top, #192345 0, #050712 55%);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+        background: #050712;
+        color: white;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
     }
 
-    .page { width: 100%; max-width: 1120px; }
-
-    .head {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 20px;
-      align-items: center;
+    .transmisión-box {
+        width: 90%;
+        margin: 40px auto;
+        padding: 20px;
+        background: #0b0f1f;
+        border-radius: 12px;
+        border: 1px solid #0ef2dd55;
     }
 
-    .head-left h1 {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .transmisión-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
     }
 
-    .head-left h1 span.logo-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 12px var(--accent);
+    .btn {
+        padding: 10px 18px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
     }
 
-    .head-left p {
-      margin-top: 4px;
-      font-size: 13px;
-      color: var(--text-muted);
+    .btn-green {
+        background: #16a34a;
+        color: white;
     }
 
-    .head-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-      font-size: 12px;
-      color: var(--text-muted);
+    .btn-red {
+        background: #dc2626;
+        color: white;
     }
 
-    .badge-live {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(255, 0, 72, 0.1);
-      border: 1px solid rgba(255, 0, 72, 0.4);
-      color: #ff5a8a;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    .badge-live span.dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #ff4b6b;
-      box-shadow: 0 0 8px #ff4b6b;
-    }
-
-    .card {
-      background: linear-gradient(135deg, rgba(0, 255, 198, 0.03), rgba(0, 128, 255, 0.02));
-      border-radius: var(--radius-lg);
-      padding: 18px 18px 14px 18px;
-      border: 1px solid var(--border-soft);
-      box-shadow: var(--shadow-soft);
-      backdrop-filter: blur(14px);
-    }
-
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 12px;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .pill {
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-size: 12px;
-      border: 1px solid var(--border-soft);
-      background: rgba(5, 7, 18, 0.8);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-muted);
-    }
-
-    .pill strong { font-weight: 600; color: var(--text-main); }
-    .pill-select { cursor: pointer; }
-
-    .pill-select::after {
-      content: "▾";
-      font-size: 10px;
-      opacity: 0.6;
-    }
-
-    .pill-accent {
-      border-color: rgba(0, 255, 198, 0.45);
-      background: var(--accent-soft);
-      color: var(--accent);
-      text-transform: uppercase;
-      font-size: 11px;
-      letter-spacing: 0.14em;
-    }
-
-    .pill-input {
-      padding: 6px 11px;
-      gap: 6px;
-    }
-
-    .pill-input input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text-main);
-      font-size: 12px;
-      min-width: 100px;
-    }
-
-    .pill-input input::placeholder { color: rgba(156, 163, 199, 0.7); }
-
-    .table-wrapper {
-      border-radius: 14px;
-      overflow-y: auto;
-      overflow-x: hidden;
-      border: 1px solid var(--border-soft);
-      background: radial-gradient(circle at top left, rgba(0, 255, 198, 0.12), transparent 55%), #050712;
-      max-height: 520px;
-    }
-
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead { background: rgba(11, 15, 31, 0.9); }
-
-    th, td {
-      padding: 10px 12px;
-      text-align: left;
-      white-space: nowrap;
-    }
-
-    th {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    tbody tr {
-      background: rgba(5, 7, 18, 0.96);
-      transition: background 0.15s ease, transform 0.12s ease;
-      cursor: pointer;
-    }
-
-    tbody tr:nth-child(even) { background: rgba(10, 12, 24, 0.98); }
-
-    tbody tr:hover {
-      background: rgba(18, 24, 54, 0.98);
-      transform: translateY(-1px);
-    }
-
-    td.position { font-weight: 700; font-size: 14px; }
-
-    td.position span {
-      padding: 3px 7px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-    }
-
-    tr:nth-child(1) td.position span {
-      color: var(--gold);
-      border-color: rgba(255, 215, 0, 0.5);
-      background: rgba(255, 215, 0, 0.12);
-    }
-
-    tr:nth-child(2) td.position span {
-      color: var(--silver);
-      border-color: rgba(192, 192, 192, 0.4);
-      background: rgba(192, 192, 192, 0.12);
-    }
-
-    tr:nth-child(3) td.position span {
-      color: var(--bronze);
-      border-color: rgba(205, 127, 50, 0.4);
-      background: rgba(205, 127, 50, 0.12);
-    }
-
-    .player-cell {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: 1px solid var(--border-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--accent);
-      text-transform: uppercase;
-      background-color: #1f2937;
-      overflow: hidden;
-    }
-
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .player-info { display: flex; flex-direction: column; }
-    .player-name { font-weight: 600; font-size: 13px; }
-
-    .flag { font-size: 16px; }
-
-    .cups-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(0, 255, 198, 0.4);
-      background: rgba(0, 255, 198, 0.08);
-      font-size: 11px;
-    }
-
-    .cups-badge span.value { font-weight: 600; color: var(--accent); }
-
-    .footer {
-      margin-top: 10px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--text-muted);
-      opacity: 0.9;
-    }
-
-    .footer span.highlight { color: var(--accent); font-weight: 500; }
-
-    @media (max-width: 768px) {
-      body { padding: 16px; }
-      .head { flex-direction: column; align-items: flex-start; }
-      .head-right { align-items: flex-start; }
-      .filters { flex-direction: column; align-items: flex-start; }
-      th:nth-child(5), td:nth-child(5),
-      th:nth-child(6), td:nth-child(6) { display: none; }
-    }
-
-    /* MODAL DETALLES JUGADOR */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 16px;
-    }
-
-    .modal-overlay.active { display: flex; }
-
-    .modal-card {
-      background: #050712;
-      border-radius: 18px;
-      border: 1px solid var(--border-soft);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
-      padding: 20px 22px;
-      max-width: 420px;
-      width: 100%;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .modal-title {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .modal-close {
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .modal-player {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .modal-avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 999px;
-      border: 1px solid var(--border-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--accent);
-      background: #111827;
-      overflow: hidden;
-    }
-
-    .modal-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .modal-name {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .modal-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .modal-grid {
-      margin-top: 8px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 16px;
-      font-size: 13px;
-    }
-
-    .modal-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-      margin-bottom: 2px;
-    }
-
-    .modal-value { font-weight: 500; }
-
-    .modal-notes {
-      margin-top: 14px;
-      font-size: 13px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border-soft);
-    }
-
-    .modal-notes strong {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    /* 🎥 SECCIÓN STREAMING EN VIVO */
-    .live-section {
-      margin-top: 24px;
-      background: #0b0f1f;
-      border-radius: 18px;
-      padding: 18px 20px;
-      box-shadow: var(--shadow-soft);
-      border: 1px solid var(--border-soft);
-    }
-
-    .live-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .live-title {
-      font-size: 15px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .live-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
-    }
-
-    .live-status {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .live-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .btn-live {
-      border-radius: 999px;
-      border: none;
-      padding: 7px 14px;
-      font-size: 12px;
-      cursor: pointer;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-live-start {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #020617;
-    }
-
-    .btn-live-stop {
-      background: #1f2937;
-      color: #f9fafb;
-    }
-
-    .live-video-wrapper {
-      margin-top: 10px;
-      background: radial-gradient(circle at top, #1b2138, #050712);
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid var(--border-soft);
-    }
-
-    #live-video {
-      width: 100%;
-      max-height: 480px;
-      background: #020617;
-      display: block;
-    }
-
-    @media (max-width: 768px) {
-      .live-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .live-controls {
+    #liveVideo {
         width: 100%;
-        justify-content: flex-start;
-      }
+        height: 300px;
+        background: black;
+        border-radius: 8px;
+        border: 1px solid #0ef2dd55;
     }
-  </style>
+</style>
 </head>
 
 <body>
 
-  <div class="page">
-    <header class="head">
-      <div class="head-left">
-        <h1>
-          <span class="logo-dot"></span>
-          Ranking de Copas · 8 Ball Pool
-        </h1>
-        <p>Historial oficial de campeones nocturnos · Torneos diarios</p>
-      </div>
-      <div class="head-right">
-        <div class="badge-live">
-          <span class="dot"></span>
-          TORNEO NOCTURNO ACTIVO
-        </div>
-        <div class="last-updated">
-          Última actualización: <strong id="last-updated">Cargando...</strong>
-        </div>
-      </div>
-    </header>
+<!-- ⭐⭐⭐ TU PÁGINA COMPLETA DE RANKING IRÍA AQUÍ ⭐⭐⭐ -->
+<!-- Mantén el resto de tu diseño arriba -->
 
-    <main class="card">
-      <section class="filters">
-        <div class="filters-left">
-          <div class="pill pill-select">
-            Temporada: <strong>2025 · Noche</strong>
-          </div>
-          <div class="pill pill-select">
-            Ordenar por: <strong>Copas totales</strong>
-          </div>
-          <div class="pill pill-accent">TOP CAMPEONES</div>
-        </div>
+<!-- =======================
+     🔴 TRANSMISIÓN EN VIVO
+     ======================= -->
+<div class="transmisión-box">
+    <div class="transmisión-header">
+        <h3>🔴 Transmisión en vivo · Mesas & Jugadas</h3>
 
-        <div class="filters-right">
-          <div class="pill pill-input">
-            🔍
-            <input id="search-jugador" type="text" placeholder="Buscar jugador..." />
-          </div>
-        </div>
-      </section>
-
-      <section class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Jugador</th>
-              <th>País</th>
-              <th>Copas</th>
-              <th>Última copa</th>
-              <th>Notas</th>
-            </tr>
-          </thead>
-
-          <tbody id="ranking-body"></tbody>
-        </table>
-      </section>
-
-      <footer class="footer">
-        <span>1 copa = 1 torneo nocturno ganado</span>
-        <span>Proyecto: <span class="highlight">Liga Nocturna 8 Ball Pool</span></span>
-      </footer>
-    </main>
-
-    <!-- 🎥 STREAMING EN VIVO DENTRO DE LA PÁGINA -->
-    <section class="live-section" id="live-stream">
-      <div class="live-header">
-        <div>
-          <div class="live-title">
-            <span class="live-dot" id="live-dot"></span>
-            <span>Transmisión en vivo · Mesas &amp; jugadas</span>
-          </div>
-          <div class="live-status" id="live-status">
-            Nadie está compartiendo pantalla todavía.
-          </div>
-        </div>
-        <div class="live-controls">
-          <button class="btn-live btn-live-start" id="btn-start-share">
+        <button class="btn btn-green"
+            onclick="window.open('broadcaster.html', '_blank')">
             🚀 Soy el streamer (compartir pantalla)
-          </button>
-          <button class="btn-live btn-live-stop" id="btn-stop-share">
-            ⏹ Detener
-          </button>
-        </div>
-      </div>
-
-      <div class="live-video-wrapper">
-        <video id="live-video" autoplay playsinline controls></video>
-      </div>
-    </section>
-  </div>
-
-  <!-- MODAL DETALLES JUGADOR -->
-  <div id="player-modal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-title">Detalles del jugador</div>
-        <button id="modal-close" class="modal-close">&times;</button>
-      </div>
-
-      <div class="modal-player">
-        <div id="modal-avatar" class="modal-avatar"></div>
-        <div>
-          <div id="modal-nombre" class="modal-name">Jugador</div>
-          <div id="modal-sub" class="modal-sub"></div>
-        </div>
-      </div>
-
-      <div class="modal-grid">
-        <div>
-          <div class="modal-label">País</div>
-          <div id="modal-pais" class="modal-value">-</div>
-        </div>
-        <div>
-          <div class="modal-label">Copas totales</div>
-          <div id="modal-copas" class="modal-value">-</div>
-        </div>
-        <div>
-          <div class="modal-label">Última copa</div>
-          <div id="modal-ultima" class="modal-value">-</div>
-        </div>
-        <div>
-          <div class="modal-label">Posición</div>
-          <div id="modal-rank" class="modal-value">-</div>
-        </div>
-      </div>
-
-      <div class="modal-notes">
-        <strong>Notas</strong>
-        <div id="modal-notas">Sin notas adicionales.</div>
-
-        <!-- Botón TikTok -->
-        <div id="modal-tiktok" style="margin-top: 12px;"></div>
-      </div>
+        </button>
     </div>
-  </div>
 
-  <!-- RANKING + MODAL SCRIPT -->
-  <script>
-    const SHEET_CSV_URL =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_0o0lo_oqp60rh4u_bOvadsM0MqWJxzQgcz37DDA9CpP0zujrJ2pkKEBhCGhV8G3bMGOxJGDFdI0O/pub?gid=0&single=true&output=csv";
+    <video id="liveVideo" autoplay playsinline></video>
+</div>
 
-    let jugadoresGlobal = [];
+<!-- =======================
+     🔗 SCRIPT VIEWER
+     ======================= -->
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
-    function parseCSV(text) {
-      const rows = [];
-      const lines = text.split("\n");
+<script>
+const socket = io("https://streaming-torneos-server-1.onrender.com");
+const video = document.getElementById("liveVideo");
+let pc;
 
-      for (let line of lines) {
-        const cols = [];
-        let current = "";
-        let insideQuotes = false;
-
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-
-          if (char === '"') insideQuotes = !insideQuotes;
-          else if (char === "," && !insideQuotes) {
-            cols.push(current);
-            current = "";
-          } else current += char;
-        }
-        cols.push(current);
-        rows.push(cols);
-      }
-      return rows;
-    }
-
-    function inicialesDesdeNombre(nombre) {
-      return nombre
-        .split(" ")
-        .filter(Boolean)
-        .map((p) => p[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase();
-    }
-
-    function crearFilaJugador(posicion, jugador, pais, copas, ultimaCopa, notas, foto) {
-      const iniciales = inicialesDesdeNombre(jugador);
-
-      const avatarContent = foto
-        ? `<img src="${foto}" alt="${jugador}"
-             onerror="this.onerror=null; this.parentElement.textContent='${iniciales}';">`
-        : iniciales;
-
-      return `
-        <tr class="row-jugador" data-rank="${posicion}">
-          <td class="position"><span>${posicion}</span></td>
-          <td>
-            <div class="player-cell">
-              <div class="avatar">${avatarContent}</div>
-              <div class="player-info">
-                <span class="player-name">${jugador}</span>
-              </div>
-            </div>
-          </td>
-          <td class="flag">${pais}</td>
-          <td>
-            <div class="cups-badge">
-              🏆 <span class="value">${copas}</span> copas
-            </div>
-          </td>
-          <td>${ultimaCopa}</td>
-          <td>${notas}</td>
-        </tr>
-      `;
-    }
-
-    function renderTabla(lista) {
-      const tbody = document.getElementById("ranking-body");
-      tbody.innerHTML = lista
-        .map((j) =>
-          crearFilaJugador(
-            j.rank, j.jugador, j.pais,
-            j.copas, j.ultimaCopa, j.notas, j.foto
-          )
-        )
-        .join("");
-
-      attachClickJugadores(lista);
-    }
-
-    function attachClickJugadores(lista) {
-      const rows = document.querySelectorAll(".row-jugador");
-      rows.forEach((row) => {
-        const rank = Number(row.dataset.rank);
-        const jugador = lista.find((j) => j.rank === rank);
-        if (!jugador) return;
-        row.addEventListener("click", () => mostrarModalJugador(jugador));
-      });
-    }
-
-    function mostrarModalJugador(j) {
-      const modal = document.getElementById("player-modal");
-      const avatar = document.getElementById("modal-avatar");
-      const nombre = document.getElementById("modal-nombre");
-      const sub = document.getElementById("modal-sub");
-      const pais = document.getElementById("modal-pais");
-      const copas = document.getElementById("modal-copas");
-      const ultima = document.getElementById("modal-ultima");
-      const rank = document.getElementById("modal-rank");
-      const notas = document.getElementById("modal-notas");
-      const tiktokBox = document.getElementById("modal-tiktok");
-
-      const iniciales = inicialesDesdeNombre(j.jugador);
-
-      if (j.foto) {
-        avatar.innerHTML = `<img src="${j.foto}" alt="${j.jugador}"
-          onerror="this.onerror=null; this.parentElement.textContent='${iniciales}';">`;
-      } else {
-        avatar.textContent = iniciales;
-        avatar.innerHTML = iniciales;
-      }
-
-      nombre.textContent = j.jugador;
-      sub.textContent = j.pais ? `Jugador de ${j.pais}` : "Jugador sin país asignado";
-      pais.textContent = j.pais || "-";
-      copas.textContent = j.copas ?? 0;
-      ultima.textContent = j.ultimaCopa || "-";
-      rank.textContent = `#${j.rank}`;
-      notas.textContent = j.notas || "Sin notas adicionales.";
-
-      if (j.tiktok) {
-        tiktokBox.innerHTML = `
-          <a href="${j.tiktok}" target="_blank"
-            style="
-              display: inline-block;
-              margin-top: 6px;
-              padding: 8px 14px;
-              background: #ff0050;
-              color: #ffffff;
-              border-radius: 999px;
-              font-size: 13px;
-              text-decoration: none;
-              font-weight: 600;
-            ">
-            🎵 Ver TikTok del jugador
-          </a>
-        `;
-      } else {
-        tiktokBox.innerHTML = "";
-      }
-
-      modal.classList.add("active");
-    }
-
-    function cerrarModalJugador() {
-      const modal = document.getElementById("player-modal");
-      modal.classList.remove("active");
-    }
-
-    async function cargarRanking() {
-      try {
-        const res = await fetch(SHEET_CSV_URL);
-        const text = await res.text();
-
-        const parsed = parseCSV(text).slice(1);
-
-        jugadoresGlobal = parsed
-          .map((cols) => ({
-            jugador: (cols[0] || "").trim(),
-            pais: (cols[1] || "").trim(),
-            copas: Number((cols[2] || "0").trim()),
-            ultimaCopa: (cols[3] || "").trim(),
-            notas: (cols[4] || "").trim(),
-            foto: (cols[5] || "").trim(),
-            tiktok: (cols[6] || "").trim()
-          }))
-          .filter((j) => j.jugador)
-          .sort((a, b) => b.copas - a.copas)
-          .map((j, index) => ({ ...j, rank: index + 1 }));
-
-        renderTabla(jugadoresGlobal);
-
-        document.getElementById("last-updated").textContent =
-          new Date().toLocaleString("es-ES");
-      } catch (error) {
-        console.error("Error cargando datos:", error);
-      }
-    }
-
-    function setupBuscador() {
-      const input = document.getElementById("search-jugador");
-      if (!input) return;
-
-      input.addEventListener("input", (e) => {
-        const term = e.target.value.toLowerCase().trim();
-
-        if (!term) return renderTabla(jugadoresGlobal);
-
-        const filtrados = jugadoresGlobal.filter((j) =>
-          j.jugador.toLowerCase().includes(term)
-        );
-
-        renderTabla(filtrados);
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      cargarRanking();
-      setupBuscador();
-
-      const modal = document.getElementById("player-modal");
-      const closeBtn = document.getElementById("modal-close");
-
-      closeBtn.addEventListener("click", cerrarModalJugador);
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) cerrarModalJugador();
-      });
-    });
-  </script>
-
-  <!-- SOCKET.IO PARA STREAMING -->
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script>
-    // 🔗 URL del servidor de señalización en Render
-    const SIGNALING_URL = "https://streaming-torneos-server.onrender.com";
-    const ROOM_ID = "torneo-nocturno";
-
-    const socket = io(SIGNALING_URL);
-
-    const startBtn = document.getElementById("btn-start-share");
-    const stopBtn = document.getElementById("btn-stop-share");
-    const videoEl = document.getElementById("live-video");
-    const statusEl = document.getElementById("live-status");
-    const dotEl = document.getElementById("live-dot");
-
-    let isHost = false;
-    let screenStream = null;
-    let peers = {}; // viewerId -> RTCPeerConnection
-
-    // Todos entran como espectadores de inicio
-    socket.emit("join-room", { roomId: ROOM_ID, role: "viewer" });
-
-    function setLiveState(live) {
-      if (live) {
-        dotEl.style.background = "#ef4444";
-        dotEl.style.boxShadow = "0 0 12px rgba(239,68,68,0.9)";
-      } else {
-        dotEl.style.background = "#22c55e";
-        dotEl.style.boxShadow = "0 0 12px rgba(34,197,94,0.9)";
-      }
-    }
-
-    startBtn.addEventListener("click", async () => {
-      if (isHost) return;
-
-      try {
-        screenStream = await navigator.mediaDevices.getDisplayMedia({
-          video: true,
-          audio: false
-        });
-
-        isHost = true;
-        videoEl.srcObject = screenStream;
-        statusEl.textContent = "Estás transmitiendo en vivo tu pantalla.";
-        setLiveState(true);
-
-        // Actualizar rol a host
-        socket.emit("join-room", { roomId: ROOM_ID, role: "host" });
-
-        screenStream.getVideoTracks()[0].addEventListener("ended", () => {
-          stopSharing();
-        });
-
-      } catch (err) {
-        console.error("Error al compartir pantalla:", err);
-        statusEl.textContent = "No se pudo iniciar la transmisión.";
-        isHost = false;
-        setLiveState(false);
-      }
+function createPeerConnection() {
+    pc = new RTCPeerConnection({
+        iceServers: [
+            { urls: "stun:stun.l.google.com:19302" }
+        ]
     });
 
-    stopBtn.addEventListener("click", () => {
-      stopSharing();
-    });
+    pc.ontrack = (event) => {
+        video.srcObject = event.streams[0];
+    };
 
-    function stopSharing() {
-      if (screenStream) {
-        screenStream.getTracks().forEach(t => t.stop());
-        screenStream = null;
-      }
-      Object.values(peers).forEach(pc => pc.close());
-      peers = {};
-      isHost = false;
-      videoEl.srcObject = null;
-      statusEl.textContent = "Transmisión detenida. Nadie está compartiendo pantalla.";
-      setLiveState(false);
-    }
-
-    // Cuando un viewer entra, el servidor avisa al host
-    socket.on("viewer-joined", async ({ viewerId }) => {
-      if (!isHost || !screenStream) return;
-
-      const pc = createPeer(viewerId);
-
-      screenStream.getTracks().forEach(track => pc.addTrack(track, screenStream));
-
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-
-      socket.emit("signal", {
-        targetId: viewerId,
-        data: { type: "offer", sdp: offer.sdp }
-      });
-    });
-
-    // Señales ICE/SDP
-    socket.on("signal", async ({ from, data }) => {
-      // Soy viewer y recibo offer
-      if (data.type === "offer" && !isHost) {
-        const pc = createPeer(from);
-        await pc.setRemoteDescription({ type: "offer", sdp: data.sdp });
-
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-
-        socket.emit("signal", {
-          targetId: from,
-          data: { type: "answer", sdp: answer.sdp }
-        });
-      }
-      // Soy host y recibo answer
-      else if (data.type === "answer" && isHost) {
-        const pc = peers[from];
-        if (pc) {
-          await pc.setRemoteDescription({ type: "answer", sdp: data.sdp });
-        }
-      }
-      // Candidatos ICE
-      else if (data.type === "candidate") {
-        const pc = peers[from];
-        if (pc) {
-          try {
-            await pc.addIceCandidate(data.candidate);
-          } catch (e) {
-            console.error("Error al agregar ICE:", e);
-          }
-        }
-      }
-    });
-
-    socket.on("user-disconnected", ({ id }) => {
-      if (peers[id]) {
-        peers[id].close();
-        delete peers[id];
-      }
-    });
-
-    function createPeer(id) {
-      if (peers[id]) return peers[id];
-
-      const pc = new RTCPeerConnection({
-        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-      });
-
-      peers[id] = pc;
-
-      pc.onicecandidate = (event) => {
+    pc.onicecandidate = (event) => {
         if (event.candidate) {
-          socket.emit("signal", {
-            targetId: id,
-            data: { type: "candidate", candidate: event.candidate }
-          });
+            socket.emit("viewer-candidate", event.candidate);
         }
-      };
+    };
+}
 
-      // El viewer recibe el stream remoto
-      pc.ontrack = (event) => {
-        if (!isHost) {
-          videoEl.srcObject = event.streams[0];
-          statusEl.textContent = "Viendo transmisión en vivo.";
-          setLiveState(true);
-        }
-      };
+async function startViewer() {
+    createPeerConnection();
 
-      return pc;
-    }
-  </script>
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    socket.emit("viewer-offer", offer);
+
+    socket.on("broadcaster-answer", async (answer) => {
+        await pc.setRemoteDescription(answer);
+    });
+
+    socket.on("broadcaster-candidate", (candidate) => {
+        pc.addIceCandidate(new RTCIceCandidate(candidate));
+    });
+}
+
+socket.on("broadcaster-is-live", () => {
+    startViewer();
+});
+</script>
 
 </body>
 </html>
