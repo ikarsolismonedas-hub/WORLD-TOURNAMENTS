@@ -195,7 +195,7 @@
     tbody tr {
       background: rgba(5, 7, 18, 0.96);
       transition: background 0.15s ease, transform 0.12s ease;
-      cursor: pointer; /* para que se vea clickeable */
+      cursor: pointer;
     }
 
     tbody tr:nth-child(even) { background: rgba(10, 12, 24, 0.98); }
@@ -298,7 +298,7 @@
       th:nth-child(6), td:nth-child(6) { display: none; }
     }
 
-    /* 🔹 MODAL DETALLES JUGADOR */
+    /* MODAL DETALLES JUGADOR */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -310,9 +310,7 @@
       padding: 16px;
     }
 
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
 
     .modal-card {
       background: #050712;
@@ -399,9 +397,7 @@
       margin-bottom: 2px;
     }
 
-    .modal-value {
-      font-weight: 500;
-    }
+    .modal-value { font-weight: 500; }
 
     .modal-notes {
       margin-top: 14px;
@@ -487,7 +483,7 @@
     </main>
   </div>
 
-  <!-- 🔹 MODAL DETALLES JUGADOR -->
+  <!-- MODAL DETALLES JUGADOR -->
   <div id="player-modal" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
@@ -525,6 +521,9 @@
       <div class="modal-notes">
         <strong>Notas</strong>
         <div id="modal-notas">Sin notas adicionales.</div>
+
+        <!-- Botón TikTok -->
+        <div id="modal-tiktok" style="margin-top: 12px;"></div>
       </div>
     </div>
   </div>
@@ -634,6 +633,7 @@
       const ultima = document.getElementById("modal-ultima");
       const rank = document.getElementById("modal-rank");
       const notas = document.getElementById("modal-notas");
+      const tiktokBox = document.getElementById("modal-tiktok");
 
       const iniciales = inicialesDesdeNombre(j.jugador);
 
@@ -642,15 +642,37 @@
           onerror="this.onerror=null; this.parentElement.textContent='${iniciales}';">`;
       } else {
         avatar.textContent = iniciales;
+        avatar.innerHTML = iniciales;
       }
 
       nombre.textContent = j.jugador;
-      sub.textContent = `Jugador de ${j.pais || "sin país"}`;
+      sub.textContent = j.pais ? `Jugador de ${j.pais}` : "Jugador sin país asignado";
       pais.textContent = j.pais || "-";
       copas.textContent = j.copas ?? 0;
       ultima.textContent = j.ultimaCopa || "-";
       rank.textContent = `#${j.rank}`;
       notas.textContent = j.notas || "Sin notas adicionales.";
+
+      if (j.tiktok) {
+        tiktokBox.innerHTML = `
+          <a href="${j.tiktok}" target="_blank"
+            style="
+              display: inline-block;
+              margin-top: 6px;
+              padding: 8px 14px;
+              background: #ff0050;
+              color: #ffffff;
+              border-radius: 999px;
+              font-size: 13px;
+              text-decoration: none;
+              font-weight: 600;
+            ">
+            🎵 Ver TikTok del jugador
+          </a>
+        `;
+      } else {
+        tiktokBox.innerHTML = "";
+      }
 
       modal.classList.add("active");
     }
@@ -674,7 +696,8 @@
             copas: Number((cols[2] || "0").trim()),
             ultimaCopa: (cols[3] || "").trim(),
             notas: (cols[4] || "").trim(),
-            foto: (cols[5] || "").trim()
+            foto: (cols[5] || "").trim(),
+            tiktok: (cols[6] || "").trim()
           }))
           .filter((j) => j.jugador)
           .sort((a, b) => b.copas - a.copas)
