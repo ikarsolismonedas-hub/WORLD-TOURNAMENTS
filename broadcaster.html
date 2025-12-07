@@ -1,73 +1,121 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Transmisión en vivo - Streamer</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-
-<style>
+  <meta charset="UTF-8">
+  <title>Streamer 8BP - Compartir pantalla</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
     body { background:#050712; color:white; text-align:center; padding:20px; }
-    button { padding:14px 20px; font-size:18px; border-radius:10px; border:none; cursor:pointer; }
+    button { padding:12px 18px; border-radius:999px; border:none; cursor:pointer; font-weight:bold; }
     #startBtn { background:#16a34a; color:white; }
     #stopBtn  { background:#dc2626; color:white; display:none; }
-</style>
+    video { width:90%; max-width:800px; margin-top:20px; background:black; border-radius:8px; }
+  </style>
 </head>
-
 <body>
 
-<h2>🎥 Transmitiendo pantalla</h2>
+  <h2>🎥 Soy el streamer - Compartir pantalla</h2>
+  <p>Al comenzar, los que estén en el ranking verán tu pantalla en la sección “Transmisión en vivo”.</p>
 
-<button id="startBtn">🚀 Comenzar transmisión</button>
-<button id="stopBtn">⛔ Detener transmisión</button>
+  <button id="startBtn">🚀 Comenzar transmisión</button>
+  <button id="stopBtn">⛔ Detener transmisión</button>
 
-<video id="preview" autoplay muted playsinline style="width:90%;margin-top:20px;"></video>
+  <video id="preview" autoplay playsinline muted></video>
 
-<script>
-const socket = io("https://streaming-torneos-server-1.onrender.com");
+  <script>
+    const socket = io("https://streaming-torneos-server-1.onrender.com");
 
-let pc;
-let stream;
-
-document.getElementById("startBtn").onclick = async () => {
-    stream = await navigator.mediaDevices.getDisplayMedia({ video:true, audio:false });
-
-    document.getElementById("preview").srcObject = stream;
-
-    pc = new RTCPeerConnection({
-        iceServers: [{ urls:"stun:stun.l.google.com:19302" }]
-    });
-
-    stream.getTracks().forEach(t => pc.addTrack(t, stream));
-
-    pc.onicecandidate = (e) => {
-        if (e.candidate) socket.emit("broadcaster-candidate", e.candidate);
+    const config = {
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
     };
 
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
+    let localStream = null;
+    let peers = {}; // un peer por watcher
 
-    socket.emit("broadcaster-offer", offer);
-    socket.emit("broadcaster-is-live");
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn  = document.getElementById("stopBtn");
+    const preview  = document.getElementById("preview");
 
-    socket.on("viewer-answer", async (answer) => {
-        await pc.setRemoteDescription(answer);
+    startBtn.onclick = async () => {
+      try {
+        localStream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: false
+        });
+
+        preview.srcObject = localStream;
+
+        socket.emit("start-broadcast");
+
+        startBtn.style.display = "none";
+        stopBtn.style.display = "inline-block";
+
+      } catch (e) {
+        console.error("Error al compartir pantalla:", e);
+        alert("No se pudo iniciar la transmisión.");
+      }
+    };
+
+    stopBtn.onclick = () => {
+      if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+      }
+      Object.values(peers).forEach(pc => pc.close());
+      peers = {};
+      socket.emit("stop-broadcast");
+      startBtn.style.display = "inline-block";
+      stopBtn.style.display = "none";
+    };
+
+    // Cuando un viewer quiere vernos
+    socket.on("watcher", (watcherId) => {
+      if (!localStream) return;
+
+      const pc = new RTCPeerConnection(config);
+      peers[watcherId] = pc;
+
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit("candidate", watcherId, event.candidate);
+        }
+      };
+
+      pc.createOffer()
+        .then(offer => pc.setLocalDescription(offer))
+        .then(() => {
+          socket.emit("offer", watcherId, pc.localDescription);
+        });
     });
 
-    socket.on("viewer-candidate", (candidate) => {
+    socket.on("answer", (watcherId, description) => {
+      const pc = peers[watcherId];
+      if (pc) {
+        pc.setRemoteDescription(description);
+      }
+    });
+
+    socket.on("candidate", (watcherId, candidate) => {
+      const pc = peers[watcherId];
+      if (pc) {
         pc.addIceCandidate(new RTCIceCandidate(candidate));
+      }
     });
 
-    document.getElementById("startBtn").style.display = "none";
-    document.getElementById("stopBtn").style.display = "inline-block";
-};
+    socket.on("disconnectPeer", (id) => {
+      const pc = peers[id];
+      if (pc) {
+        pc.close();
+        delete peers[id];
+      }
+    });
 
-document.getElementById("stopBtn").onclick = () => {
-    stream.getTracks().forEach(t => t.stop());
-    pc.close();
-    alert("Transmisión detenida");
-};
-</script>
+    window.onbeforeunload = () => {
+      socket.emit("stop-broadcast");
+    };
+  </script>
 
 </body>
 </html>
