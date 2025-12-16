@@ -26,6 +26,9 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ✅ evita el “ancho” extra / scroll horizontal en móvil */
+    html, body { width: 100%; overflow-x: hidden; }
+
     body {
       font-family: var(--font-main);
       background: radial-gradient(circle at top, #192345 0, #050712 55%);
@@ -285,6 +288,7 @@
       font-size: 11px;
       color: var(--text-muted);
       opacity: 0.9;
+      gap: 12px;
     }
 
     .footer span.highlight { color: var(--accent); font-weight: 500; }
@@ -507,6 +511,94 @@
       .live-controls {
         width: 100%;
         justify-content: flex-start;
+      }
+    }
+
+    /* ✅✅✅ MOBILE VERTICAL 1080x1920 (celular) */
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+        align-items: flex-start;
+        justify-content: flex-start;
+      }
+
+      .page {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .card {
+        padding: 14px 12px;
+      }
+
+      .head-left h1 {
+        font-size: 20px;
+        flex-wrap: wrap;
+        line-height: 1.2;
+      }
+
+      .head-left p {
+        font-size: 12px;
+      }
+
+      .filters {
+        width: 100%;
+        gap: 8px;
+      }
+
+      .filters-left,
+      .filters-right {
+        width: 100%;
+      }
+
+      .pill {
+        font-size: 11px;
+      }
+
+      .pill-input input {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .table-wrapper {
+        max-height: none;
+        overflow-x: hidden;
+      }
+
+      table {
+        width: 100%;
+        font-size: 12px;
+      }
+
+      /* 🔥 CLAVE: permitir que el texto se ajuste */
+      th, td {
+        padding: 8px 6px;
+        white-space: normal;
+        word-break: break-word;
+      }
+
+      /* mantener ocultas columnas pesadas */
+      th:nth-child(5), td:nth-child(5),
+      th:nth-child(6), td:nth-child(6) { display: none; }
+
+      .player-cell { gap: 8px; }
+
+      .avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+      }
+
+      .player-name { font-size: 12px; }
+
+      #live-video { max-height: 260px; }
+
+      .live-section { padding: 14px; }
+
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
       }
     }
   </style>
@@ -890,7 +982,6 @@
     }
 
     socket.on("broadcaster", (broadcasterId) => {
-      // el servidor avisa que hay streamer, nos ofrecemos como watcher
       socket.emit("watcher", broadcasterId);
       liveStatus.textContent = "Conectando con transmisión en vivo...";
       liveDot.style.background = "#ef4444";
