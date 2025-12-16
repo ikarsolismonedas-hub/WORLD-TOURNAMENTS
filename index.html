@@ -9,6 +9,7 @@
     :root {
       --bg-main: #050712;
       --bg-card: #0b0f1f;
+
       --accent: #00ffc6;
       --accent-soft: rgba(0, 255, 198, 0.12);
       --text-main: #f5f7ff;
@@ -16,260 +17,920 @@
       --gold: #ffd700;
       --silver: #c0c0c0;
       --bronze: #cd7f32;
-      --border-soft: rgba(255,255,255,.08);
+      --danger: #ff4b6b;
+      --border-soft: rgba(255, 255, 255, 0.08);
       --radius-lg: 18px;
-      --shadow-soft: 0 18px 40px rgba(0,0,0,.55);
-      --font-main: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.55);
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    *{box-sizing:border-box;margin:0;padding:0}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body{
-      font-family:var(--font-main);
-      background:radial-gradient(circle at top,#192345 0,#050712 55%);
-      color:var(--text-main);
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      padding:24px;
+    body {
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top, #192345 0, #050712 55%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
 
-    .page{width:100%;max-width:1120px}
+    .page { width: 100%; max-width: 1120px; }
 
-    .head{
-      display:flex;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom:20px;
-      align-items:center;
+    .head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      align-items: center;
     }
 
-    .head-left h1{
-      font-size:26px;
-      font-weight:700;
-      text-transform:uppercase;
-      display:flex;
-      align-items:center;
-      gap:10px;
+    .head-left h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .logo-dot{
-      width:9px;height:9px;border-radius:50%;
-      background:var(--accent);
-      box-shadow:0 0 12px var(--accent);
+    .head-left h1 span.logo-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
     }
 
-    .head-left p{font-size:13px;color:var(--text-muted)}
-
-    .badge-live{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:4px 10px;
-      border-radius:999px;
-      background:rgba(255,0,72,.1);
-      border:1px solid rgba(255,0,72,.4);
-      color:#ff5a8a;
-      font-size:11px;
+    .head-left p {
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--text-muted);
     }
 
-    .badge-live .dot{
-      width:7px;height:7px;border-radius:50%;
-      background:#ff4b6b;
-      box-shadow:0 0 8px #ff4b6b;
+    .head-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-muted);
     }
 
-    .card{
-      background:linear-gradient(135deg,rgba(0,255,198,.03),rgba(0,128,255,.02));
-      border-radius:var(--radius-lg);
-      padding:18px;
-      border:1px solid var(--border-soft);
-      box-shadow:var(--shadow-soft);
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 0, 72, 0.1);
+      border: 1px solid rgba(255, 0, 72, 0.4);
+      color: #ff5a8a;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
     }
 
-    .filters{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:12px;
-      flex-wrap:wrap;
+    .badge-live span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #ff4b6b;
+      box-shadow: 0 0 8px #ff4b6b;
     }
 
-    .pill{
-      border-radius:999px;
-      padding:7px 12px;
-      font-size:12px;
-      border:1px solid var(--border-soft);
-      background:#050712cc;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      color:var(--text-muted);
+    .card {
+      background: linear-gradient(135deg, rgba(0, 255, 198, 0.03), rgba(0, 128, 255, 0.02));
+      border-radius: var(--radius-lg);
+      padding: 18px 18px 14px 18px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
     }
 
-    .pill-accent{
-      background:var(--accent-soft);
-      color:var(--accent);
-      font-size:11px;
-      letter-spacing:.12em;
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    /* 🔧 ARREGLO CLAVE */
-    .table-wrapper{
-      border-radius:14px;
-      overflow-y:auto;
-      overflow-x:auto;                 /* ✅ antes hidden */
-      -webkit-overflow-scrolling:touch;
-      border:1px solid var(--border-soft);
-      background:#050712;
-      max-height:520px;
+    .pill {
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 12px;
+      border: 1px solid var(--border-soft);
+      background: rgba(5, 7, 18, 0.8);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
     }
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:13px;
-      min-width:640px;                 /* ✅ evita cortes */
+    .pill strong { font-weight: 600; color: var(--text-main); }
+    .pill-select { cursor: pointer; }
+
+    .pill-select::after {
+      content: "▾";
+      font-size: 10px;
+      opacity: 0.6;
     }
 
-    th,td{
-      padding:10px 12px;
-      text-align:left;
-      white-space:nowrap;
+    .pill-accent {
+      border-color: rgba(0, 255, 198, 0.45);
+      background: var(--accent-soft);
+      color: var(--accent);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.14em;
     }
 
-    th{
-      font-size:11px;
-      color:var(--text-muted);
-      border-bottom:1px solid var(--border-soft);
+    .pill-input {
+      padding: 6px 11px;
+      gap: 6px;
     }
 
-    tbody tr{background:#050712f5}
-    tbody tr:nth-child(even){background:#0a0c18}
-
-    .player-cell{
-      display:flex;
-      align-items:center;
-      gap:10px;
+    .pill-input input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-size: 12px;
+      min-width: 100px;
     }
 
-    .avatar{
-      width:32px;height:32px;
-      border-radius:50%;
-      background:#1f2937;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:600;
-      color:var(--accent);
-      overflow:hidden;
+    .pill-input input::placeholder { color: rgba(156, 163, 199, 0.7); }
+
+    .table-wrapper {
+      border-radius: 14px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      border: 1px solid var(--border-soft);
+      background: radial-gradient(circle at top left, rgba(0, 255, 198, 0.12), transparent 55%), #050712;
+      max-height: 520px;
     }
 
-    .avatar img{width:100%;height:100%;object-fit:cover}
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead { background: rgba(11, 15, 31, 0.9); }
 
-    .cups-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:4px 9px;
-      border-radius:999px;
-      border:1px solid rgba(0,255,198,.4);
-      background:rgba(0,255,198,.08);
-      font-size:11px;
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      white-space: nowrap;
     }
 
-    .cups-badge .value{color:var(--accent);font-weight:600}
-
-    .footer{
-      margin-top:10px;
-      font-size:11px;
-      color:var(--text-muted);
-      display:flex;
-      justify-content:space-between;
+    th {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-soft);
     }
 
-    /* 📱 MOBILE FIX */
-    @media (max-width:768px){
-      body{padding:12px}
-      .card{padding:14px}
-      table{font-size:12px}
-      th,td{padding:8px 9px}
-      .table-wrapper{max-height:65vh}
+    tbody tr {
+      background: rgba(5, 7, 18, 0.96);
+      transition: background 0.15s ease, transform 0.12s ease;
+      cursor: pointer;
+    }
 
-      /* Oculta columnas menos importantes */
-      th:nth-child(5),td:nth-child(5),
-      th:nth-child(6),td:nth-child(6){display:none}
+    tbody tr:nth-child(even) { background: rgba(10, 12, 24, 0.98); }
+
+    tbody tr:hover {
+      background: rgba(18, 24, 54, 0.98);
+      transform: translateY(-1px);
+    }
+
+    td.position { font-weight: 700; font-size: 14px; }
+
+    td.position span {
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+
+    tr:nth-child(1) td.position span {
+      color: var(--gold);
+      border-color: rgba(255, 215, 0, 0.5);
+      background: rgba(255, 215, 0, 0.12);
+    }
+
+    tr:nth-child(2) td.position span {
+      color: var(--silver);
+      border-color: rgba(192, 192, 192, 0.4);
+      background: rgba(192, 192, 192, 0.12);
+    }
+
+    tr:nth-child(3) td.position span {
+      color: var(--bronze);
+      border-color: rgba(205, 127, 50, 0.4);
+      background: rgba(205, 127, 50, 0.12);
+    }
+
+    .player-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      background-color: #1f2937;
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .player-info { display: flex; flex-direction: column; }
+    .player-name { font-weight: 600; font-size: 13px; }
+
+    .flag { font-size: 16px; }
+
+    .cups-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 198, 0.4);
+      background: rgba(0, 255, 198, 0.08);
+      font-size: 11px;
+    }
+
+    .cups-badge span.value { font-weight: 600; color: var(--accent); }
+
+    .footer {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      opacity: 0.9;
+    }
+
+    .footer span.highlight { color: var(--accent); font-weight: 500; }
+
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .head { flex-direction: column; align-items: flex-start; }
+      .head-right { align-items: flex-start; }
+      .filters { flex-direction: column; align-items: flex-start; }
+      th:nth-child(5), td:nth-child(5),
+      th:nth-child(6), td:nth-child(6) { display: none; }
+    }
+
+    /* MODAL DETALLES JUGADOR */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-card {
+      background: #050712;
+      border-radius: 18px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      padding: 20px 22px;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .modal-player {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .modal-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent);
+      background: #111827;
+      overflow: hidden;
+    }
+
+    .modal-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .modal-name {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .modal-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .modal-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 16px;
+      font-size: 13px;
+    }
+
+    .modal-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .modal-value { font-weight: 500; }
+
+    .modal-notes {
+      margin-top: 14px;
+      font-size: 13px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .modal-notes strong {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* 🎥 SECCIÓN STREAMING EN VIVO */
+    .live-section {
+      margin-top: 24px;
+      background: #0b0f1f;
+      border-radius: 18px;
+      padding: 18px 20px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border-soft);
+    }
+
+    .live-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .live-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
+    }
+
+    .live-status {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .live-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-live {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-live-start {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #020617;
+    }
+
+    .btn-live-stop {
+      background: #1f2937;
+      color: #f9fafb;
+    }
+
+    .live-video-wrapper {
+      margin-top: 10px;
+      background: radial-gradient(circle at top, #1b2138, #050712);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-soft);
+    }
+
+    #live-video {
+      width: 100%;
+      max-height: 480px;
+      background: #020617;
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .live-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .live-controls {
+        width: 100%;
+        justify-content: flex-start;
+      }
     }
   </style>
 </head>
 
 <body>
-<div class="page">
 
-  <header class="head">
-    <div class="head-left">
-      <h1><span class="logo-dot"></span> Ranking de Copas · 8 Ball Pool</h1>
-      <p>Historial oficial de campeones nocturnos</p>
-    </div>
-    <div class="badge-live"><span class="dot"></span> TORNEO ACTIVO</div>
-  </header>
-
-  <main class="card">
-
-    <section class="filters">
-      <div class="pill">Temporada <strong>2025</strong></div>
-      <div class="pill pill-accent">TOP CAMPEONES</div>
-    </section>
-
-    <section class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Jugador</th>
-            <th>País</th>
-            <th>Copas</th>
-            <th>Última</th>
-            <th>Notas</th>
-          </tr>
-        </thead>
-        <tbody id="ranking-body"></tbody>
-      </table>
-    </section>
-
-    <footer class="footer">
-      <span>1 copa = 1 torneo ganado</span>
-      <span>Liga Nocturna 8BP</span>
-    </footer>
-
-  </main>
-</div>
-
-<script>
-const SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_0o0lo_oqp60rh4u_bOvadsM0MqWJxzQgcz37DDA9CpP0zujrJ2pkKEBhCGhV8G3bMGOxJGDFdI0O/pub?gid=0&single=true&output=csv";
-
-function parseCSV(t){return t.split("\n").slice(1).map(r=>r.split(","))}
-async function cargar(){
-  const res=await fetch(SHEET_CSV_URL);
-  const text=await res.text();
-  const data=parseCSV(text);
-  document.getElementById("ranking-body").innerHTML=data.map((r,i)=>`
-    <tr>
-      <td>${i+1}</td>
-      <td>
-        <div class="player-cell">
-          <div class="avatar">${r[0][0]}</div>
-          ${r[0]}
+  <div class="page">
+    <header class="head">
+      <div class="head-left">
+        <h1>
+          <span class="logo-dot"></span>
+          Ranking de Copas · 8 Ball Pool
+        </h1>
+        <p>Historial oficial de campeones nocturnos · Torneos diarios</p>
+      </div>
+      <div class="head-right">
+        <div class="badge-live">
+          <span class="dot"></span>
+          TORNEO NOCTURNO ACTIVO
         </div>
-      </td>
-      <td>${r[1]}</td>
-      <td><span class="cups-badge">🏆 <span class="value">${r[2]}</span></span></td>
-      <td>${r[3]}</td>
-      <td>${r[4]}</td>
-    </tr>`).join("");
-}
-cargar();
-</script>
+        <div class="last-updated">
+          Última actualización: <strong id="last-updated">Cargando...</strong>
+        </div>
+      </div>
+    </header>
+
+    <main class="card">
+      <section class="filters">
+        <div class="filters-left">
+          <div class="pill pill-select">
+            Temporada: <strong>2025 · Noche</strong>
+          </div>
+          <div class="pill pill-select">
+            Ordenar por: <strong>Copas totales</strong>
+          </div>
+          <div class="pill pill-accent">TOP CAMPEONES</div>
+        </div>
+
+        <div class="filters-right">
+          <div class="pill pill-input">
+            🔍
+            <input id="search-jugador" type="text" placeholder="Buscar jugador..." />
+          </div>
+        </div>
+      </section>
+
+      <section class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Jugador</th>
+              <th>País</th>
+              <th>Copas</th>
+              <th>Última copa</th>
+              <th>Notas</th>
+            </tr>
+          </thead>
+
+          <tbody id="ranking-body"></tbody>
+        </table>
+      </section>
+
+      <footer class="footer">
+        <span>1 copa = 1 torneo nocturno ganado</span>
+        <span>Proyecto: <span class="highlight">Liga Nocturna 8 Ball Pool</span></span>
+      </footer>
+    </main>
+
+    <!-- 🎥 STREAMING EN VIVO DENTRO DE LA PÁGINA -->
+    <section class="live-section" id="live-stream">
+      <div class="live-header">
+        <div>
+          <div class="live-title">
+            <span class="live-dot" id="live-dot"></span>
+            <span>Transmisión en vivo · Mesas &amp; jugadas</span>
+          </div>
+          <div class="live-status" id="live-status">
+            Nadie está compartiendo pantalla todavía.
+          </div>
+        </div>
+        <div class="live-controls">
+          <!-- este botón SOLO abre broadcaster.html -->
+          <button class="btn-live btn-live-start"
+                  onclick="window.open('broadcaster.html','_blank')">
+            🚀 Soy el streamer (compartir pantalla)
+          </button>
+        </div>
+      </div>
+
+      <div class="live-video-wrapper">
+        <video id="live-video" autoplay playsinline controls></video>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL DETALLES JUGADOR -->
+  <div id="player-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Detalles del jugador</div>
+        <button id="modal-close" class="modal-close">&times;</button>
+      </div>
+
+      <div class="modal-player">
+        <div id="modal-avatar" class="modal-avatar"></div>
+        <div>
+          <div id="modal-nombre" class="modal-name">Jugador</div>
+          <div id="modal-sub" class="modal-sub"></div>
+        </div>
+      </div>
+
+      <div class="modal-grid">
+        <div>
+          <div class="modal-label">País</div>
+          <div id="modal-pais" class="modal-value">-</div>
+        </div>
+        <div>
+          <div class="modal-label">Copas totales</div>
+          <div id="modal-copas" class="modal-value">-</div>
+        </div>
+        <div>
+          <div class="modal-label">Última copa</div>
+          <div id="modal-ultima" class="modal-value">-</div>
+        </div>
+        <div>
+          <div class="modal-label">Posición</div>
+          <div id="modal-rank" class="modal-value">-</div>
+        </div>
+      </div>
+
+      <div class="modal-notes">
+        <strong>Notas</strong>
+        <div id="modal-notas">Sin notas adicionales.</div>
+
+        <!-- Botón TikTok -->
+        <div id="modal-tiktok" style="margin-top: 12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANKING + MODAL SCRIPT -->
+  <script>
+    const SHEET_CSV_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_0o0lo_oqp60rh4u_bOvadsM0MqWJxzQgcz37DDA9CpP0zujrJ2pkKEBhCGhV8G3bMGOxJGDFdI0O/pub?gid=0&single=true&output=csv";
+
+    let jugadoresGlobal = [];
+
+    function parseCSV(text) {
+      const rows = [];
+      const lines = text.split("\n");
+
+      for (let line of lines) {
+        const cols = [];
+        let current = "";
+        let insideQuotes = false;
+
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+
+          if (char === '"') insideQuotes = !insideQuotes;
+          else if (char === "," && !insideQuotes) {
+            cols.push(current);
+            current = "";
+          } else current += char;
+        }
+        cols.push(current);
+        rows.push(cols);
+      }
+      return rows;
+    }
+
+    function inicialesDesdeNombre(nombre) {
+      return nombre
+        .split(" ")
+        .filter(Boolean)
+        .map((p) => p[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase();
+    }
+
+    function crearFilaJugador(posicion, jugador, pais, copas, ultimaCopa, notas, foto) {
+      const iniciales = inicialesDesdeNombre(jugador);
+
+      const avatarContent = foto
+        ? `<img src="${foto}" alt="${jugador}"
+             onerror="this.onerror=null; this.parentElement.textContent='${iniciales}';">`
+        : iniciales;
+
+      return `
+        <tr class="row-jugador" data-rank="${posicion}">
+          <td class="position"><span>${posicion}</span></td>
+          <td>
+            <div class="player-cell">
+              <div class="avatar">${avatarContent}</div>
+              <div class="player-info">
+                <span class="player-name">${jugador}</span>
+              </div>
+            </div>
+          </td>
+          <td class="flag">${pais}</td>
+          <td>
+            <div class="cups-badge">
+              🏆 <span class="value">${copas}</span> copas
+            </div>
+          </td>
+          <td>${ultimaCopa}</td>
+          <td>${notas}</td>
+        </tr>
+      `;
+    }
+
+    function renderTabla(lista) {
+      const tbody = document.getElementById("ranking-body");
+      tbody.innerHTML = lista
+        .map((j) =>
+          crearFilaJugador(
+            j.rank, j.jugador, j.pais,
+            j.copas, j.ultimaCopa, j.notas, j.foto
+          )
+        )
+        .join("");
+
+      attachClickJugadores(lista);
+    }
+
+    function attachClickJugadores(lista) {
+      const rows = document.querySelectorAll(".row-jugador");
+      rows.forEach((row) => {
+        const rank = Number(row.dataset.rank);
+        const jugador = lista.find((j) => j.rank === rank);
+        if (!jugador) return;
+        row.addEventListener("click", () => mostrarModalJugador(jugador));
+      });
+    }
+
+    function mostrarModalJugador(j) {
+      const modal = document.getElementById("player-modal");
+      const avatar = document.getElementById("modal-avatar");
+      const nombre = document.getElementById("modal-nombre");
+      const sub = document.getElementById("modal-sub");
+      const pais = document.getElementById("modal-pais");
+      const copas = document.getElementById("modal-copas");
+      const ultima = document.getElementById("modal-ultima");
+      const rank = document.getElementById("modal-rank");
+      const notas = document.getElementById("modal-notas");
+      const tiktokBox = document.getElementById("modal-tiktok");
+
+      const iniciales = inicialesDesdeNombre(j.jugador);
+
+      if (j.foto) {
+        avatar.innerHTML = `<img src="${j.foto}" alt="${j.jugador}"
+          onerror="this.onerror=null; this.parentElement.textContent='${iniciales}';">`;
+      } else {
+        avatar.innerHTML = iniciales;
+      }
+
+      nombre.textContent = j.jugador;
+      sub.textContent = j.pais ? `Jugador de ${j.pais}` : "Jugador sin país asignado";
+      pais.textContent = j.pais || "-";
+      copas.textContent = j.copas ?? 0;
+      ultima.textContent = j.ultimaCopa || "-";
+      rank.textContent = `#${j.rank}`;
+      notas.textContent = j.notas || "Sin notas adicionales.";
+
+      if (j.tiktok) {
+        tiktokBox.innerHTML = `
+          <a href="${j.tiktok}" target="_blank"
+            style="
+              display: inline-block;
+              margin-top: 6px;
+              padding: 8px 14px;
+              background: #ff0050;
+              color: #ffffff;
+              border-radius: 999px;
+              font-size: 13px;
+              text-decoration: none;
+              font-weight: 600;
+            ">
+            🎵 Ver TikTok del jugador
+          </a>
+        `;
+      } else {
+        tiktokBox.innerHTML = "";
+      }
+
+      modal.classList.add("active");
+    }
+
+    function cerrarModalJugador() {
+      const modal = document.getElementById("player-modal");
+      modal.classList.remove("active");
+    }
+
+    async function cargarRanking() {
+      try {
+        const res = await fetch(SHEET_CSV_URL);
+        const text = await res.text();
+
+        const parsed = parseCSV(text).slice(1);
+
+        jugadoresGlobal = parsed
+          .map((cols) => ({
+            jugador: (cols[0] || "").trim(),
+            pais: (cols[1] || "").trim(),
+            copas: Number((cols[2] || "0").trim()),
+            ultimaCopa: (cols[3] || "").trim(),
+            notas: (cols[4] || "").trim(),
+            foto: (cols[5] || "").trim(),
+            tiktok: (cols[6] || "").trim()
+          }))
+          .filter((j) => j.jugador)
+          .sort((a, b) => b.copas - a.copas)
+          .map((j, index) => ({ ...j, rank: index + 1 }));
+
+        renderTabla(jugadoresGlobal);
+
+        document.getElementById("last-updated").textContent =
+          new Date().toLocaleString("es-ES");
+      } catch (error) {
+        console.error("Error cargando datos:", error);
+      }
+    }
+
+    function setupBuscador() {
+      const input = document.getElementById("search-jugador");
+      if (!input) return;
+
+      input.addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase().trim();
+
+        if (!term) return renderTabla(jugadoresGlobal);
+
+        const filtrados = jugadoresGlobal.filter((j) =>
+          j.jugador.toLowerCase().includes(term)
+        );
+
+        renderTabla(filtrados);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      cargarRanking();
+      setupBuscador();
+
+      const modal = document.getElementById("player-modal");
+      const closeBtn = document.getElementById("modal-close");
+
+      closeBtn.addEventListener("click", cerrarModalJugador);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) cerrarModalJugador();
+      });
+    });
+  </script>
+
+  <!-- 👀 VIEWER WEBRTC: SOLO RECIBE LA TRANSMISIÓN -->
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <script>
+    const liveVideo = document.getElementById("live-video");
+    const liveStatus = document.getElementById("live-status");
+    const liveDot = document.getElementById("live-dot");
+
+    const socket = io("https://streaming-torneos-server-1.onrender.com");
+
+    let pcViewer = null;
+    const rtcConfig = {
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+    };
+
+    function resetViewer() {
+      if (pcViewer) {
+        pcViewer.close();
+        pcViewer = null;
+      }
+      liveVideo.srcObject = null;
+      liveStatus.textContent = "Nadie está compartiendo pantalla todavía.";
+      liveDot.style.background = "#22c55e";
+      liveDot.style.boxShadow = "0 0 12px rgba(34,197,94,0.9)";
+    }
+
+    socket.on("broadcaster", (broadcasterId) => {
+      // el servidor avisa que hay streamer, nos ofrecemos como watcher
+      socket.emit("watcher", broadcasterId);
+      liveStatus.textContent = "Conectando con transmisión en vivo...";
+      liveDot.style.background = "#ef4444";
+      liveDot.style.boxShadow = "0 0 12px rgba(239,68,68,0.9)";
+    });
+
+    socket.on("offer", async (id, description) => {
+      pcViewer = new RTCPeerConnection(rtcConfig);
+
+      pcViewer.ontrack = (event) => {
+        liveVideo.srcObject = event.streams[0];
+        liveStatus.textContent = "Viendo transmisión en vivo.";
+      };
+
+      pcViewer.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit("candidate", id, event.candidate);
+        }
+      };
+
+      await pcViewer.setRemoteDescription(description);
+      const answer = await pcViewer.createAnswer();
+      await pcViewer.setLocalDescription(answer);
+      socket.emit("answer", id, pcViewer.localDescription);
+    });
+
+    socket.on("candidate", (id, candidate) => {
+      if (pcViewer) {
+        pcViewer.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    });
+
+    socket.on("broadcast-ended", () => {
+      resetViewer();
+    });
+
+    socket.on("disconnectPeer", () => {
+      resetViewer();
+    });
+  </script>
 
 </body>
 </html>
