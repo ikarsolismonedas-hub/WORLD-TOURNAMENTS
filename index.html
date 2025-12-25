@@ -731,9 +731,10 @@
         </div>
       </div>
 
+      <!-- ✅ CAMBIO: de "Notas" a "1VS1" -->
       <div class="modal-notes">
-        <strong>Notas</strong>
-        <div id="modal-notas">Sin notas adicionales.</div>
+        <strong>1VS1</strong>
+        <div id="modal-1v1">Ganados: 0 · Perdidos: 0 · Winrate: 0%</div>
 
         <!-- Botón TikTok -->
         <div id="modal-tiktok" style="margin-top: 12px;"></div>
@@ -846,7 +847,9 @@
       const copas = document.getElementById("modal-copas");
       const ultima = document.getElementById("modal-ultima");
       const rank = document.getElementById("modal-rank");
-      const notas = document.getElementById("modal-notas");
+
+      // ✅ CAMBIO: ahora en vez de modal-notas usamos modal-1v1
+      const box1v1 = document.getElementById("modal-1v1");
       const tiktokBox = document.getElementById("modal-tiktok");
 
       const iniciales = inicialesDesdeNombre(j.jugador);
@@ -864,7 +867,13 @@
       copas.textContent = j.copas ?? 0;
       ultima.textContent = j.ultimaCopa || "-";
       rank.textContent = `#${j.rank}`;
-      notas.textContent = j.notas || "Sin notas adicionales.";
+
+      // ✅ 1VS1 (ganados / perdidos / winrate)
+      const wins = Number(j.wins1v1 || 0);
+      const losses = Number(j.losses1v1 || 0);
+      const total = wins + losses;
+      const winrate = total ? Math.round((wins / total) * 100) : 0;
+      box1v1.textContent = `Ganados: ${wins} · Perdidos: ${losses} · Winrate: ${winrate}%`;
 
       if (j.tiktok) {
         tiktokBox.innerHTML = `
@@ -910,7 +919,11 @@
             ultimaCopa: (cols[3] || "").trim(),
             notas: (cols[4] || "").trim(),
             foto: (cols[5] || "").trim(),
-            tiktok: (cols[6] || "").trim()
+            tiktok: (cols[6] || "").trim(),
+
+            // ✅ NUEVO: columnas para 1VS1 (agrega 2 columnas en tu Sheet)
+            wins1v1: Number((cols[7] || "0").trim()),
+            losses1v1: Number((cols[8] || "0").trim())
           }))
           .filter((j) => j.jugador)
           .sort((a, b) => b.copas - a.copas)
